@@ -18,6 +18,7 @@ img{max-width:100%;display:block}[id]{scroll-margin-top:72px}
 .burger{display:none;background:none;border:none;color:var(--fg);font-size:26px;cursor:pointer}
 .hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden}
 .hero video,.hero .bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:0}
+.hero video{opacity:0;transition:opacity .8s ease}
 .hero .ov{position:absolute;inset:0;background:linear-gradient(90deg,rgba(7,12,20,.86),rgba(7,12,20,.5) 60%,rgba(7,12,20,.3));z-index:1}
 .hero .in{position:relative;z-index:2;max-width:1140px;margin:0 auto;padding:0 22px;width:100%}
 .eyebrow{color:#fff;font-weight:700;letter-spacing:2px;font-size:13px;margin-bottom:18px}
@@ -116,8 +117,8 @@ function render(){
  var revs=REVIEWS[p]||[];
  var navlinks='<a href="#servicii" onclick="cm()">Servicii</a><a href="#despre" onclick="cm()">Despre</a>'+((img&&img.g)?'<a href="#galerie" onclick="cm()">Galerie</a>':'')+(revs.length?'<a href="#recenzii" onclick="cm()">Recenzii</a>':'')+'<a href="#contact" onclick="cm()">Contact</a>'+(tel?'<a class="tel" href="tel:+'+tel+'">📞 <b>'+td+'</b></a>':'')+'<a class="navcta" href="'+wa+'">Programeaza</a>';
  var nav='<nav class="nav" id="nav"><div class="navin"><div class="brand">'+esc(shortBrand(nume))+' <span class="d">.</span></div><button class="burger" onclick="tm()">&#9776;</button><div class="links" id="nl">'+navlinks+'</div></div></nav>';
- var isMobile=window.matchMedia('(max-width:860px)').matches;var heroPhoto=(img&&(img.hero||(img.g&&img.g[0])))||'';var heroStyle=heroPhoto?' style="background:url('+heroPhoto+') center/cover"':'';var heroBg=(img&&img.video&&!isMobile)?'<video autoplay muted loop playsinline poster="'+(img.hero||'')+'"><source src="'+img.video+'" type="video/mp4"></video>':'';
- var hero='<header class="hero"'+heroStyle+'>'+heroBg+'<div class="ov"></div><div class="in"><div class="eyebrow"><span class="dot"></span>'+esc(oras.toUpperCase())+' · '+esc(cat.toUpperCase())+'</div><h1>'+esc(d.h1)+'<br><span class="l2">'+esc(d.h2)+'</span></h1><p class="lead">'+esc(d.sub)+'</p><div class="hbtn"><a class="bp" href="'+wa+'">Programeaza-te →</a><a class="bo" href="#servicii">Vezi serviciile</a></div></div></header>';
+ var heroPhoto=(img&&(img.hero||(img.g&&img.g[0])))||'';var bgDiv=heroPhoto?'<div class="bg" style="background:url('+heroPhoto+') center/cover"></div>':'';var vid=(img&&img.video)?'<video autoplay muted loop playsinline preload="auto" poster="'+(img.hero||'')+'" onplaying="this.style.opacity=1"><source src="'+img.video+'" type="video/mp4"></video>':'';var heroBg=bgDiv+vid;
+ var hero='<header class="hero">'+heroBg+'<div class="ov"></div><div class="in"><div class="eyebrow"><span class="dot"></span>'+esc(oras.toUpperCase())+' · '+esc(cat.toUpperCase())+'</div><h1>'+esc(d.h1)+'<br><span class="l2">'+esc(d.h2)+'</span></h1><p class="lead">'+esc(d.sub)+'</p><div class="hbtn"><a class="bp" href="'+wa+'">Programeaza-te →</a><a class="bo" href="#servicii">Vezi serviciile</a></div></div></header>';
  var trustRat=(rstar&&rstar!=='-')?'<div class="tb"><span class="e">★</span><span><b>'+esc(rstar)+'/5</b>'+(rnum?' · '+rnum+' recenzii Google':' pe Google')+'</span></div>':(revs.length?'<div class="tb"><span class="e">★</span><span><b>5.0/5</b> pe Google</span></div>':'');
  var trust='<div class="trust"><div class="trustin">'+trustRat+d.bd.map(function(b){return '<div class="tb"><span class="e">'+b[0]+'</span><span>'+esc(b[1])+'</span></div>';}).join('')+'</div></div>';
  var sv=d.sv.map(function(s,i){return '<div class="svc"><div class="no">0'+(i+1)+'</div><div class="e">'+s[0]+'</div><h3>'+esc(s[1])+'</h3><p>'+esc(s[2])+'</p></div>';}).join('');
