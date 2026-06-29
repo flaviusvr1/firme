@@ -19,6 +19,7 @@ body{margin:0;font-family:-apple-system,Helvetica,Arial,sans-serif;background:#f
 .tel{font-size:13.5px;color:#222;margin-bottom:8px}
 .btns{display:flex;gap:6px}.btn{flex:1;text-align:center;text-decoration:none;color:#fff;padding:8px 0;border-radius:8px;font-size:12.5px;font-weight:600}
 .wa{background:#25D366}.sms{background:#0a84ff}.call{background:#666}
+.dchip{display:inline-block;background:#e8f3f1;color:#0f766e;border-radius:6px;padding:1px 7px;font-size:10.5px;font-weight:700;margin-bottom:3px}
 .bar{position:fixed;left:0;right:0;bottom:0;background:#111;color:#fff;display:flex;gap:8px;align-items:center;padding:10px 12px;z-index:7}
 .bar #si{flex:1;font-size:13px}.bar button{border:none;border-radius:9px;padding:10px 12px;font-size:13px;font-weight:600}
 .bar .ghost{background:#333;color:#fff}.bar .primary{background:#25D366;color:#fff}
@@ -34,7 +35,7 @@ body{margin:0;font-family:-apple-system,Helvetica,Arial,sans-serif;background:#f
 .fc{display:flex;align-items:center;gap:6px;font-size:12px;color:#fff;opacity:.95}.fc input{width:16px;height:16px;margin:0}
 </style></head><body>
 <div class="top"><h1>Firme fara site &mdash; contactare</h1><p id="cnt"></p>
-<div class="ctrl"><input id="q" placeholder="Cauta firma / nisa..."><select id="city"><option value="">Toate orasele</option></select></div><div style="display:flex;align-items:center;gap:10px;margin-top:8px"><label class="fc"><input type="checkbox" id="hd"> Ascunde contactate</label><span class="fc" id="dc" style="margin-left:auto"></span></div></div>
+<div class="ctrl"><input id="q" placeholder="Cauta firma / nisa..."><select id="city"><option value="">Toate orasele</option></select><select id="dom"><option value="">Toate domeniile</option></select></div><div style="display:flex;align-items:center;gap:10px;margin-top:8px"><label class="fc"><input type="checkbox" id="hd"> Ascunde contactate</label><span class="fc" id="dc" style="margin-left:auto"></span></div></div>
 <div class="note">Fiecare firma are deja un <b>site demo live</b>. Apesi WhatsApp &rarr; mesajul contine deja link-ul demo al firmei. Pentru SMS in masa: bifezi firme &rarr; "SMS la selectati" (loturi de 20). Pe iPhone opreste "Group Messaging".</div>
 <div class="wrap" id="list"></div>
 <div class="bar"><span id="si">0 selectate</span><button class="ghost" id="selv">Bifeaza vizibile</button><button class="ghost" id="clr">Goleste</button><button class="primary" id="go">SMS la selectati</button></div>
@@ -49,9 +50,13 @@ var GEN="Buna ziua! Ma numesc Flavius Vranau, software developer. Am observat ca
 var sel={};var cities=[];D.forEach(function(r){if(cities.indexOf(r[0])<0)cities.push(r[0]);});var done={};try{done=JSON.parse(localStorage.getItem("fv_done")||"{}");}catch(e){done={};}function saveDone(){try{localStorage.setItem("fv_done",JSON.stringify(done));}catch(e){}}function doneCount(){var n=0;for(var k in done){if(done[k])n++;}return n;}var hideDone=false;
 document.getElementById('cnt').textContent=D.length+" firme, "+cities.length+" localitati. Fiecare cu site demo + mesaj gata.";
 var citySel=document.getElementById('city');cities.forEach(function(c){var o=document.createElement('option');o.value=c;o.textContent=c;citySel.appendChild(o);});
+function grp(cat){cat=(cat||'').toLowerCase();function h(){for(var i=0;i<arguments.length;i++)if(cat.indexOf(arguments[i])>-1)return true;return false;}if(h('veterinar'))return'vet';if(h('cafenea','coffee','cafe'))return'cafe';if(h('cofetar','patiser','covrigar','gogoser','brutar'))return'cofetarie';if(h('florar','flori'))return'flori';if(h('pensiune','cazare','cabana','vila','agrotur','agropens','casa de vacanta','hostel','motel','vacanta'))return'cazare';if(h('gsm','telefoane','telefon'))return'gsm';if(h('service auto','vulcanizare','parbrize','geamuri','piese auto','tapiterie','spalatorie auto','anvelope','itp'))return'auto';if(h('restaurant','pub','fast food','shaorma','bistro','gastronomic','pizzerie'))return'food';if(h('unghii','manichiura','nail','pedichiura'))return'nails';if(h('frizer','barber'))return'barber';if(h('logoped','copii','kids','play','gradinita','cresa'))return'kids';if(h('coafor','beauty','cosmetic','salon','machiaj','infrumusetare','hair','gene'))return'beauty';if(h('psiholog','kineto','optica','dentar','stomatolog','recuper','terapie'))return'sanatate';return'default';}
+var DOMN={vet:'Veterinar',cafe:'Cafenea',cofetarie:'Cofetarie/Patiserie',flori:'Florarie',cazare:'Cazare/Pensiune',gsm:'Service GSM',auto:'Auto/Service',food:'Restaurant',nails:'Unghii/Manichiura',barber:'Frizerie/Barber',kids:'Copii/Logoped',beauty:'Coafor/Beauty',sanatate:'Sanatate/Cabinet',default:'Diverse'};
+var domCount={};D.forEach(function(r){var g=grp(r[2]);domCount[g]=(domCount[g]||0)+1;});
+var domSel=document.getElementById('dom');Object.keys(domCount).sort(function(a,b){return domCount[b]-domCount[a];}).forEach(function(g){var o=document.createElement('option');o.value=g;o.textContent=(DOMN[g]||g)+' ('+domCount[g]+')';domSel.appendChild(o);});
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function disp(t){return t?('0'+t.slice(2)):'(fara telefon)';}
-function visibleIdx(){var q=document.getElementById('q').value.toLowerCase(),cf=citySel.value,out=[];D.forEach(function(r,i){if(cf&&r[0]!==cf)return;if(q&&(r[1]+' '+r[2]+' '+r[0]).toLowerCase().indexOf(q)<0)return;if(hideDone&&done[r[6]])return;out.push(i);});return out;}
+function visibleIdx(){var q=document.getElementById('q').value.toLowerCase(),cf=citySel.value,df=domSel.value,out=[];D.forEach(function(r,i){if(cf&&r[0]!==cf)return;if(df&&grp(r[2])!==df)return;if(q&&(r[1]+' '+r[2]+' '+r[0]).toLowerCase().indexOf(q)<0)return;if(hideDone&&done[r[6]])return;out.push(i);});return out;}
 function render(){
   var idx=visibleIdx(),list=document.getElementById('list');list.innerHTML='';
   var byCity={};idx.forEach(function(i){(byCity[D[i][0]]=byCity[D[i][0]]||[]).push(i);});
@@ -69,7 +74,7 @@ function render(){
       var cl=t?'tel:+'+t:'';
       var card=document.createElement('div');card.className='card'+(done[slug]?' done':'');
       card.innerHTML='<input type="checkbox" data-i="'+i+'" '+(sel[i]?'checked':'')+'>'+
-        '<div class="bd"><div class="nm">'+esc(r[1])+'</div>'+
+        '<div class="bd"><span class="dchip">'+esc(DOMN[grp(r[2])]||'Diverse')+'</span><div class="nm">'+esc(r[1])+'</div>'+
         '<div class="meta">'+esc(r[2])+' &middot; '+esc(r[4])+(r[5]?' &middot; '+esc(r[5]):'')+'</div>'+
         '<a class="site" href="'+du+'" target="_blank">Vezi site-ul &raquo;</a>'+
         '<div class="tel">'+disp(t)+'</div>'+
@@ -85,7 +90,7 @@ function render(){
 }
 function selectedPhones(){var ph=[];Object.keys(sel).forEach(function(i){var t=D[i][3];if(t)ph.push('+'+t);});return ph.filter(function(v,i,a){return a.indexOf(v)===i;});}
 function updateBar(){document.getElementById('si').textContent=Object.keys(sel).length+' selectate';var dc=document.getElementById('dc');if(dc)dc.textContent=doneCount()+' contactate';}
-document.getElementById('q').addEventListener('input',render);citySel.addEventListener('change',render);var hd=document.getElementById('hd');if(hd)hd.addEventListener('change',function(e){hideDone=e.target.checked;render();});
+document.getElementById('q').addEventListener('input',render);citySel.addEventListener('change',render);domSel.addEventListener('change',render);var hd=document.getElementById('hd');if(hd)hd.addEventListener('change',function(e){hideDone=e.target.checked;render();});
 document.getElementById('selv').addEventListener('click',function(){visibleIdx().forEach(function(i){if(D[i][3])sel[i]=1;});render();});
 document.getElementById('clr').addEventListener('click',function(){sel={};render();});
 document.getElementById('go').addEventListener('click',function(){var ph=selectedPhones();if(!ph.length){alert('Nu ai bifat nicio firma cu telefon.');return;}var bbs=document.getElementById('bbs');bbs.innerHTML='';for(var i=0;i<ph.length;i+=20){var b=ph.slice(i,i+20);var a=document.createElement('a');a.className='bb';a.href='sms:'+b.join(',')+'&body='+enc(GEN);a.textContent='Lot '+(i/20+1)+' · '+b.length+' firme';bbs.appendChild(a);}document.getElementById('ph').textContent=ph.length+' firme selectate, in loturi de 20.';document.getElementById('panel').classList.add('show');});
