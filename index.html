@@ -27,9 +27,14 @@ body{margin:0;font-family:-apple-system,Helvetica,Arial,sans-serif;background:#f
 .sheet h3{margin:0 0 4px}.sheet p{margin:0 0 12px;font-size:13px;color:#555}
 .bb{display:block;background:#0a84ff;color:#fff;text-decoration:none;padding:13px;border-radius:11px;margin:8px 0;font-size:15px;font-weight:600;text-align:center}
 .cls{display:block;width:100%;background:#eee;border:none;padding:12px;border-radius:11px;margin-top:10px;font-size:14px;font-weight:600}
+.card.done{opacity:.55;border-color:#cdeede;background:#f6fbf7}
+.card.done .nm{text-decoration:line-through}
+.dn{display:block;width:100%;margin-top:7px;border:1px solid #cfe6e1;background:#eaf6f1;color:#0f766e;border-radius:9px;padding:9px 0;font-size:12.5px;font-weight:700;cursor:pointer}
+.card.done .dn{background:#16a34a;border-color:#16a34a;color:#fff}
+.fc{display:flex;align-items:center;gap:6px;font-size:12px;color:#fff;opacity:.95}.fc input{width:16px;height:16px;margin:0}
 </style></head><body>
 <div class="top"><h1>Firme fara site &mdash; contactare</h1><p id="cnt"></p>
-<div class="ctrl"><input id="q" placeholder="Cauta firma / nisa..."><select id="city"><option value="">Toate orasele</option></select></div></div>
+<div class="ctrl"><input id="q" placeholder="Cauta firma / nisa..."><select id="city"><option value="">Toate orasele</option></select></div><div style="display:flex;align-items:center;gap:10px;margin-top:8px"><label class="fc"><input type="checkbox" id="hd"> Ascunde contactate</label><span class="fc" id="dc" style="margin-left:auto"></span></div></div>
 <div class="note">Fiecare firma are deja un <b>site demo live</b>. Apesi WhatsApp &rarr; mesajul contine deja link-ul demo al firmei. Pentru SMS in masa: bifezi firme &rarr; "SMS la selectati" (loturi de 20). Pe iPhone opreste "Group Messaging".</div>
 <div class="wrap" id="list"></div>
 <div class="bar"><span id="si">0 selectate</span><button class="ghost" id="selv">Bifeaza vizibile</button><button class="ghost" id="clr">Goleste</button><button class="primary" id="go">SMS la selectati</button></div>
@@ -41,17 +46,17 @@ var enc=encodeURIComponent;
 function demoUrl(slug){return BASE+"demo.html?f="+slug;}
 function msg(n,slug){return "Buna ziua! Ma numesc Flavius Vranau, software developer. Am observat ca "+n+" nu are inca un site de prezentare, asa ca v-am pregatit deja unul, gratuit - il puteti vedea aici: "+demoUrl(slug)+"\n\nDaca va place, il finalizam cu pozele si detaliile dvs. Costul este de 250 euro (o singura data), plus domeniul - aproximativ 100 lei/an (cautam cea mai ieftina varianta), gazduirea fiind gratuita.\n\nPot realiza si ceva complet personalizat (de exemplu programari online cu sloturi de ore) - practic orice aveti nevoie; in functie de cerintele dvs. va comunic costurile exacte.\n\nDaca doriti sa aflati mai multe, imi puteti scrie un mesaj sau ne putem auzi la telefon. O zi buna!";}
 var GEN="Buna ziua! Ma numesc Flavius Vranau, software developer. Am observat ca afacerea dvs. nu are inca un site de prezentare si va pot pregati unul demo, gratuit. Daca va place, il finalizam cu detaliile dvs.; costul este de 250 euro (o singura data) plus domeniul - aproximativ 100 lei/an, gazduirea fiind gratuita. Daca doriti sa aflati mai multe, imi puteti scrie un mesaj sau ne putem auzi la telefon.";
-var sel={};var cities=[];D.forEach(function(r){if(cities.indexOf(r[0])<0)cities.push(r[0]);});
+var sel={};var cities=[];D.forEach(function(r){if(cities.indexOf(r[0])<0)cities.push(r[0]);});var done={};try{done=JSON.parse(localStorage.getItem("fv_done")||"{}");}catch(e){done={};}function saveDone(){try{localStorage.setItem("fv_done",JSON.stringify(done));}catch(e){}}function doneCount(){var n=0;for(var k in done){if(done[k])n++;}return n;}var hideDone=false;
 document.getElementById('cnt').textContent=D.length+" firme, "+cities.length+" localitati. Fiecare cu site demo + mesaj gata.";
 var citySel=document.getElementById('city');cities.forEach(function(c){var o=document.createElement('option');o.value=c;o.textContent=c;citySel.appendChild(o);});
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function disp(t){return t?('0'+t.slice(2)):'(fara telefon)';}
-function visibleIdx(){var q=document.getElementById('q').value.toLowerCase(),cf=citySel.value,out=[];D.forEach(function(r,i){if(cf&&r[0]!==cf)return;if(q&&(r[1]+' '+r[2]+' '+r[0]).toLowerCase().indexOf(q)<0)return;out.push(i);});return out;}
+function visibleIdx(){var q=document.getElementById('q').value.toLowerCase(),cf=citySel.value,out=[];D.forEach(function(r,i){if(cf&&r[0]!==cf)return;if(q&&(r[1]+' '+r[2]+' '+r[0]).toLowerCase().indexOf(q)<0)return;if(hideDone&&done[r[6]])return;out.push(i);});return out;}
 function render(){
   var idx=visibleIdx(),list=document.getElementById('list');list.innerHTML='';
   var byCity={};idx.forEach(function(i){(byCity[D[i][0]]=byCity[D[i][0]]||[]).push(i);});
   Object.keys(byCity).forEach(function(c){
-    var ids=byCity[c],grp=document.createElement('div');grp.className='grp';
+    var ids=byCity[c],grp=document.createElement('div');grp.className='grp';ids.sort(function(a,b){return (done[D[a][6]]?1:0)-(done[D[b][6]]?1:0);});
     var allsel=ids.every(function(i){return sel[i];});
     var gh=document.createElement('div');gh.className='gh';
     gh.innerHTML='<input type="checkbox" '+(allsel?'checked':'')+'><b>'+esc(c)+'</b><span class="cnt">'+ids.length+'</span><span>&#9660;</span>';
@@ -62,25 +67,25 @@ function render(){
       var wa=t?'https://wa.me/'+t+'?text='+enc(msg(r[1],slug)):'';
       var sm=t?'sms:+'+t+'&body='+enc(msg(r[1],slug)):'';
       var cl=t?'tel:+'+t:'';
-      var card=document.createElement('div');card.className='card';
+      var card=document.createElement('div');card.className='card'+(done[slug]?' done':'');
       card.innerHTML='<input type="checkbox" data-i="'+i+'" '+(sel[i]?'checked':'')+'>'+
         '<div class="bd"><div class="nm">'+esc(r[1])+'</div>'+
         '<div class="meta">'+esc(r[2])+' &middot; '+esc(r[4])+(r[5]?' &middot; '+esc(r[5]):'')+'</div>'+
         '<a class="site" href="'+du+'" target="_blank">Vezi site-ul &raquo;</a>'+
         '<div class="tel">'+disp(t)+'</div>'+
-        '<div class="btns">'+(wa?'<a class="btn wa" href="'+wa+'">WhatsApp</a>':'')+(sm?'<a class="btn sms" href="'+sm+'">SMS</a>':'')+(cl?'<a class="btn call" href="'+cl+'">Suna</a>':'')+'</div></div>';
+        '<div class="btns">'+(wa?'<a class="btn wa" href="'+wa+'">WhatsApp</a>':'')+(sm?'<a class="btn sms" href="'+sm+'">SMS</a>':'')+(cl?'<a class="btn call" href="'+cl+'">Suna</a>':'')+'</div><button class="dn" data-slug="'+esc(slug)+'">'+(done[slug]?'✓ Contactat':'Marcheaza contactat')+'</button></div>';
       cards.appendChild(card);
     });
     gh.querySelector('input').addEventListener('click',function(e){e.stopPropagation();var on=e.target.checked;ids.forEach(function(i){if(D[i][3]){if(on)sel[i]=1;else delete sel[i];}});render();});
     gh.addEventListener('click',function(){grp.classList.toggle('collapsed');});
-    cards.addEventListener('change',function(e){if(e.target.dataset&&e.target.dataset.i!==undefined){var i=+e.target.dataset.i;if(e.target.checked)sel[i]=1;else delete sel[i];updateBar();}});
+    cards.addEventListener('change',function(e){if(e.target.dataset&&e.target.dataset.i!==undefined){var i=+e.target.dataset.i;if(e.target.checked)sel[i]=1;else delete sel[i];updateBar();}});cards.addEventListener('click',function(e){if(e.target.classList&&e.target.classList.contains('dn')){var sg=e.target.getAttribute('data-slug');if(done[sg])delete done[sg];else done[sg]=1;saveDone();render();}});
     grp.appendChild(gh);grp.appendChild(cards);list.appendChild(grp);
   });
   updateBar();
 }
 function selectedPhones(){var ph=[];Object.keys(sel).forEach(function(i){var t=D[i][3];if(t)ph.push('+'+t);});return ph.filter(function(v,i,a){return a.indexOf(v)===i;});}
-function updateBar(){document.getElementById('si').textContent=Object.keys(sel).length+' selectate';}
-document.getElementById('q').addEventListener('input',render);citySel.addEventListener('change',render);
+function updateBar(){document.getElementById('si').textContent=Object.keys(sel).length+' selectate';var dc=document.getElementById('dc');if(dc)dc.textContent=doneCount()+' contactate';}
+document.getElementById('q').addEventListener('input',render);citySel.addEventListener('change',render);var hd=document.getElementById('hd');if(hd)hd.addEventListener('change',function(e){hideDone=e.target.checked;render();});
 document.getElementById('selv').addEventListener('click',function(){visibleIdx().forEach(function(i){if(D[i][3])sel[i]=1;});render();});
 document.getElementById('clr').addEventListener('click',function(){sel={};render();});
 document.getElementById('go').addEventListener('click',function(){var ph=selectedPhones();if(!ph.length){alert('Nu ai bifat nicio firma cu telefon.');return;}var bbs=document.getElementById('bbs');bbs.innerHTML='';for(var i=0;i<ph.length;i+=20){var b=ph.slice(i,i+20);var a=document.createElement('a');a.className='bb';a.href='sms:'+b.join(',')+'&body='+enc(GEN);a.textContent='Lot '+(i/20+1)+' · '+b.length+' firme';bbs.appendChild(a);}document.getElementById('ph').textContent=ph.length+' firme selectate, in loturi de 20.';document.getElementById('panel').classList.add('show');});
