@@ -9,7 +9,7 @@ img{max-width:100%}[id]{scroll-margin-top:70px}
 .nav{position:fixed;top:0;left:0;right:0;z-index:30;transition:.3s}
 .nav.solid{background:rgba(11,18,32,.92);backdrop-filter:blur(10px);border-bottom:1px solid #1e293b}
 .navin{max-width:1140px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:16px 22px}
-.brand{font-weight:800;font-size:18px;letter-spacing:1px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60%}
+.brand{font-weight:800;font-size:15px;letter-spacing:.3px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60%}
 .brand .d{color:var(--a)}
 .links{display:flex;gap:24px;align-items:center}
 .links a{color:#cbd5e1;text-decoration:none;font-size:14px;font-weight:600}
@@ -81,6 +81,7 @@ var FIRMS={"diana-beauty-studio":["Diana Beauty Studio","Beauty / unghii","Pites
 function tm(){var n=document.getElementById('nl');if(n)n.classList.toggle('open');}
 function cm(){var n=document.getElementById('nl');if(n)n.classList.remove('open');}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function shortBrand(n){var w=String(n||'').toUpperCase().split(' ');var o='';for(var i=0;i<w.length;i++){if(!w[i])continue;if(o&&(o+' '+w[i]).length>20)break;o=o?(o+' '+w[i]):w[i];}return o;}
 function group(cat){cat=(cat||'').toLowerCase();function h(){for(var i=0;i<arguments.length;i++)if(cat.indexOf(arguments[i])>-1)return true;return false;}
  if(h('frizer','barber'))return'barber';
  if(h('coafor','beauty','unghii','cosmetic','salon','gene','manichiura','machiaj'))return'beauty';
@@ -114,7 +115,7 @@ function render(){
  var rnum=(rat&&rat.match(/\((\d+)\)/))?rat.match(/\((\d+)\)/)[1]:'';
  var rstar=(rat||'').split(' ')[0];
  var navlinks='<a href="#servicii" onclick="cm()">Servicii</a><a href="#despre" onclick="cm()">Despre</a>'+((img&&img.g)?'<a href="#galerie" onclick="cm()">Galerie</a>':'')+'<a href="#contact" onclick="cm()">Contact</a>'+(tel?'<a class="tel" href="tel:+'+tel+'">📞 <b>'+td+'</b></a>':'')+'<a class="navcta" href="'+wa+'">Programează</a>';
- var nav='<nav class="nav" id="nav"><div class="navin"><div class="brand">'+esc(nume.toUpperCase())+' <span class="d">.</span></div><button class="burger" onclick="tm()">&#9776;</button><div class="links" id="nl">'+navlinks+'</div></div></nav>';
+ var nav='<nav class="nav" id="nav"><div class="navin"><div class="brand">'+esc(shortBrand(nume))+' <span class="d">.</span></div><button class="burger" onclick="tm()">&#9776;</button><div class="links" id="nl">'+navlinks+'</div></div></nav>';
  var heroBg=(img&&img.video)?'<video autoplay muted loop playsinline poster="'+(img.hero||'')+'"><source src="'+img.video+'" type="video/mp4"></video>':(img&&img.hero?'<div class="bg" style="background:url('+img.hero+') center/cover"></div>':'');
  var hero='<header class="hero" style="--a:'+d.a+'">'+heroBg+'<div class="ov"></div><div class="in">'+
    '<div class="eyebrow"><span class="dot"></span>'+esc(oras.toUpperCase())+' · '+esc(cat.toUpperCase())+'</div>'+
